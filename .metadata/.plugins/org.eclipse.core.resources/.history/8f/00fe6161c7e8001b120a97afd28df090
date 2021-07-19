@@ -1,0 +1,52 @@
+package apifilmes;
+
+import static io.restassured.RestAssured.given;
+
+import org.junit.Test;
+
+public class TesteApi {
+
+	private final String ID_DO_FILME = "tt1285016";
+	private final String API_KEY = "52ec71bf";
+
+	@Test
+
+	public void validarTituloFilme() {
+		given().contentType("application/json").when()
+				.get("http://www.omdbapi.com/?i={ID_DO_FILME}&apikey={API_KEY}", ID_DO_FILME, API_KEY).then()
+				.statusCode(200).body("Title", equals("The Social Network"));
+	}
+
+	@Test
+	public void validarAnoFilme() {
+		given().contentType("application/json").when()
+				.get("http://www.omdbapi.com/?i={ID_DO_FILME}&apikey={API_KEY}", ID_DO_FILME, API_KEY).then()
+				.statusCode(200).body("Year", equals("2010"));
+	}
+
+	@Test
+	public void validarIdiomaFilme() {
+		given().contentType("application/json").when()
+				.get("http://www.omdbapi.com/?i={ID_DO_FILME}&apikey={API_KEY}", ID_DO_FILME, API_KEY).then()
+				.statusCode(200).body("Language", equals("English, French"));
+	}
+
+	@Test
+	public void validarIDIncorreto() {
+		given().contentType("application/json").when()
+				.get("http://www.omdbapi.com/?ii={ID_DO_FILME}&apikey={API_KEY}", ID_DO_FILME, API_KEY).then()
+				.statusCode(200).body("Error", equals("Incorrect IMDb ID."));
+
+	}
+
+	private final String ID_DO_FILME_INEXISTENTE = "naoexisteessefilme";
+	private final String API_KEY_INEXISTENTE = "52ec71bf";
+
+	@Test
+	public void filmeInexistente() {
+		given().contentType("application/json").when().get("http://www.omdbapi.com/?t={ID_DO_FILME}&apikey={API_KEY}",
+				ID_DO_FILME_INEXISTENTE, API_KEY_INEXISTENTE).then().statusCode(200)
+				.body("Error", equals("Movie not found!"));
+	}
+
+}
